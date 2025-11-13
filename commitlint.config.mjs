@@ -1,41 +1,73 @@
-// commitlint.config.js
+import conventionalConfig from '@commitlint/config-conventional'
 
-module.exports = {
+const Configuration = {
+  /*
+   * Resolve and load @commitlint/config-conventional from node_modules.
+   * Referenced packages must be installed
+   */
   extends: ['@commitlint/config-conventional'],
-
+  /*
+   * Resolve and load conventional-changelog-atom from node_modules.
+   * Referenced packages must be installed
+   */
+  parserPreset: 'conventional-changelog-atom',
+  /*
+   * Resolve and load @commitlint/format from node_modules.
+   * Referenced package must be installed
+   */
+  formatter: '@commitlint/format',
+  /*
+   * Any rules defined here will override rules from @commitlint/config-conventional
+   */
   rules: {
-    // 1. Force the 'type' to be one of the listed values
+    // Start with all the rules from the default config
+    ...conventionalConfig.rules,
+
+    // Now, override just the 'type-enum' rule
     'type-enum': [
-      2, // Level: Error (prevent commit)
-      'always', // Applicable: Always
+      2,
+      'always',
       [
-        'feat',     // A new feature
-        'fix',      // A bug fix
-        'docs',     // Documentation only changes
-        'style',    // Changes that do not affect the meaning of the code (white-space, formatting, etc)
-        'refactor', // A code change that neither fixes a bug nor adds a feature
-        'perf',     // A code change that improves performance
-        'test',     // Adding missing tests or correcting existing tests
-        'chore',    // Routine tasks (e.g. updating dependencies, adjusting build process)
-        'revert',   // Reverting a previous commit
-        'build',    // Changes that affect the build system or external dependencies
+        // Spread in all the *default* types
+        ...conventionalConfig.rules['type-enum'][2],
+        // And add your own custom type
+        'wip',
       ],
     ],
-
-    // 2. Disable the default subject-case rules, allowing for any case
-    'subject-case': [0], // Level: Ignore
-
-    // 3. Enforce that a scope is provided (e.g., 'feat(auth): ...')
-    'scope-empty': [
-      2,        // Level: Error
-      'never',  // Applicable: Never (must not be empty)
-    ],
-
-    // 4. Enforce a maximum length for the subject line
-    'header-max-length': [
-      2,      // Level: Error
-      'always', // Applicable: Always
-      72,     // Value: Max 72 characters
-    ],
   },
-};
+  /*
+   * Array of functions that return true if commitlint should ignore the given message.
+   * Given array is merged with predefined functions, which consist of matchers like:
+   *
+   * - 'Merge pull request', 'Merge X into Y' or 'Merge branch X'
+   * - 'Revert X'
+   * - 'v1.2.3' (ie semver matcher)
+   * - 'Automatic merge X' or 'Auto-merged X into Y'
+   *
+   * To see full list, check https://github.com/conventional-changelog/commitlint/blob/master/%40commitlint/is-ignored/src/defaults.ts.
+   * To disable those ignores and run rules always, set `defaultIgnores: false` as shown below.
+   */
+  ignores: [(commit) => commit === ''],
+  /*
+   * Whether commitlint uses the default ignore rules, see the description above.
+   */
+  defaultIgnores: true,
+  /*
+   * Custom URL to show upon failure
+   */
+  helpUrl:
+    'https://github.com/conventional-changelog/commitlint/#what-is-commitlint',
+  /*
+   * Custom prompt configs
+   */
+  prompt: {
+    messages: {},
+    questions: {
+      type: {
+        description: 'please input type:',
+      },
+    },
+  },
+}
+
+export default Configuration
