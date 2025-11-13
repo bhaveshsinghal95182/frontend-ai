@@ -1,8 +1,6 @@
+import { caller } from "@/trpc/server";
 
-export default function Home() {
-  return (
-    <main>
-      <h1>Welcome to the Home Page</h1>
-    </main>
-  );
+export default async function Home() {
+  const data = await caller.createAI({ text: "singhal" });
+  return <main>{JSON.stringify(data)}</main>;
 }
