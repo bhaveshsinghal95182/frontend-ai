@@ -22,7 +22,10 @@ export default function Home() {
   return (
     <div className="p-4 max-w-7xl mx-auto">
       <Input value={value} onChange={(e) => setValue(e.target.value)}></Input>
-      <Button onClick={() => invoke.mutate({ text: 'Test' })}>
+      <Button
+        disabled={invoke.isPending}
+        onClick={() => invoke.mutate({ value: value })}
+      >
         Invoke background job
       </Button>
     </div>

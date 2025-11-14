@@ -6,19 +6,14 @@ import { baseProcedure, createTRPCRouter } from '../init'
 
 export const appRouter = createTRPCRouter({
   invoke: baseProcedure
-    .input(z.object({ text: z.string() }))
+    .input(z.object({ value: z.string() }))
     .mutation(async ({ input }) => {
       await inngest.send({
-        name: 'test/hello.world',
+        name: 'app/ticket.created',
         data: {
-          email: input.text,
+          value: input.value,
         },
       })
-    }),
-  createAI: baseProcedure
-    .input(z.object({ text: z.string() }))
-    .query((opts) => {
-      return { greeting: `Hello ${opts.input.text}` }
     }),
 })
 
