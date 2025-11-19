@@ -15,7 +15,7 @@ WORKDIR /home/user/nextjs-app
 
 # Initialize Next.js and Shadcn
 # Note: We accept defaults to avoid interactive prompts
-RUN npx --yes create-next-app@latest . --yes --eslint --typescript --src-dir --import-alias "@/*"
+RUN npx --yes create-next-app@latest . --yes --eslint --typescript --no-src-dir --import-alias "@/*"
 RUN npx --yes shadcn@latest init --yes -b neutral --force
 RUN npx --yes shadcn add --all --yes
 
