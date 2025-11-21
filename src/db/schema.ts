@@ -16,19 +16,40 @@ export const messages = pgTable('messages', {
   content: text('content').notNull(),
   role: messageRoleEnum('role').notNull(),
   type: messageTypeEnum('type').notNull(),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
+
+  projectId: uuid('project_id')
+    .notNull()
+    .references(() => projects.id, { onDelete: 'cascade' }),
 })
 
 export const fragments = pgTable('fragments', {
   id: uuid('id').defaultRandom().primaryKey(),
-  messageId: uuid('message_id').notNull().unique(),
   sandboxUrl: text('sandbox_url').notNull(),
   title: text('title').notNull(),
   files: json('files').notNull(),
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+
+  messageId: uuid('message_id')
+    .notNull()
+    .unique()
+    .references(() => messages.id, { onDelete: 'cascade' }),
+})
+
+export const projects = pgTable('projects', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name'),
+
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
@@ -45,6 +66,11 @@ export const messagesRelations = relations(messages, ({ one }) => ({
     fields: [messages.id], // The field in the 'messages' table
     references: [fragments.messageId], // The foreign key field in the 'fragments' table
   }),
+
+  project: one(projects, {
+    fields: [messages.projectId],
+    references: [projects.id],
+  }),
 }))
 
 export const fragmentsRelations = relations(fragments, ({ one }) => ({
@@ -54,4 +80,8 @@ export const fragmentsRelations = relations(fragments, ({ one }) => ({
     references: [messages.id],
     relationName: 'FragmentToMessage', // Optional: Helps clarify the inverse relation name
   }),
+}))
+
+export const projectsRelations = relations(projects, ({ many }) => ({
+  messages: many(messages),
 }))

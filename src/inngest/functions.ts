@@ -206,6 +206,7 @@ export default inngest.createFunction(
     await step.run('save-result', async () => {
       if (isError) {
         return await db.insert(messages).values({
+          projectId: event.data.projectId,
           content: 'Something went wrong. Please try again',
           role: 'Assistant',
           type: 'Error',
@@ -215,6 +216,7 @@ export default inngest.createFunction(
         const [newMessage] = await tx
           .insert(messages)
           .values({
+            projectId: event.data.projectId,
             content: result.state.data.summary,
             role: 'Assistant',
             type: 'Result',
