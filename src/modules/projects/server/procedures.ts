@@ -1,4 +1,5 @@
-import { desc } from 'drizzle-orm'
+import { TRPCError } from '@trpc/server'
+import { desc, eq } from 'drizzle-orm'
 import { generateSlug } from 'random-word-slugs'
 import z from 'zod'
 
@@ -8,6 +9,24 @@ import { inngest } from '@/inngest/client'
 import { baseProcedure, createTRPCRouter } from '@/trpc/init'
 
 export const projectsRouter = createTRPCRouter({
+  getOne: baseProcedure
+    .input(
+      z.object({
+        id: z.string().min(1, { message: 'id is required' }),
+      })
+    )
+    .query(async ({ input }) => {
+      const [existingProject] = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.id, input.id))
+        .limit(1)
+
+      if (!existingProject) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' })
+      }
+      return existingProject
+    }),
   getMany: baseProcedure.query(async () => {
     const someProjects = await db
       .select()

@@ -11,6 +11,13 @@ import {
 export const messageRoleEnum = pgEnum('message_role', ['User', 'Assistant'])
 export const messageTypeEnum = pgEnum('message_type', ['Result', 'Error'])
 
+export type Message = typeof messages.$inferSelect
+export type NewMessage = typeof messages.$inferInsert
+export type Fragment = typeof fragments.$inferSelect
+export type NewFragment = typeof fragments.$inferInsert
+export type Project = typeof projects.$inferSelect
+export type NewProject = typeof projects.$inferInsert
+
 export const messages = pgTable('messages', {
   id: uuid('id').defaultRandom().primaryKey(),
   content: text('content').notNull(),
